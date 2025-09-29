@@ -2,6 +2,7 @@ package com.toy.weddingapp.domain.invitation.service.impl;
 
 import com.toy.weddingapp.common.constant.Status;
 import com.toy.weddingapp.domain.invitation.dto.InvitationAddRequest;
+import com.toy.weddingapp.domain.invitation.dto.InvitationResponse;
 import com.toy.weddingapp.domain.invitation.dto.InvitationUpdateRequest;
 import com.toy.weddingapp.domain.invitation.entity.Invitation;
 import com.toy.weddingapp.domain.invitation.mapper.InvitationMapper;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -35,6 +37,9 @@ class InvitationServiceImplTest {
 
     @Mock
     private EntityManager em;
+
+    @Value("${weddings.domain}")
+    private String DOMAIN;
 
 
     @Test
@@ -121,4 +126,39 @@ class InvitationServiceImplTest {
 
     }
 
+    @Test
+    void create_uri() {
+        // given
+        Long id = 10000L;
+        Invitation invitation = new Invitation();
+        invitation.setId(id);
+        invitation.setWeddings(null);
+        invitation.setTitle("title");
+        invitation.setMessage("message");
+        invitation.setStatus(Status.PROGRESS);
+        invitation.setStartDate(LocalDate.of(2025, 9, 10));
+        invitation.setEndDate(LocalDate.of(2025, 10, 10));
+        InvitationResponse invitationResponse = new InvitationResponse();
+        invitationResponse.setId(id);
+        invitationResponse.setWeddings(null);
+        invitationResponse.setTitle("title");
+        invitationResponse.setMessage("message");
+        invitationResponse.setStatus(Status.PROGRESS);
+        invitationResponse.setStartDate(LocalDate.of(2025, 9, 10));
+        invitationResponse.setEndDate(LocalDate.of(2025, 10, 10));
+
+
+        given(invitationRepository.findById(invitation.getId())).willReturn(Optional.of(invitation));
+        given(invitationMapper.toDto(invitation)).willReturn(invitationResponse);
+
+        // when
+        InvitationResponse invitationRes = invitationServiceImpl.createUrl(id);
+        // then
+        Assertions.assertNotNull(invitationRes);
+        Assertions.assertEquals(invitation.getId(), invitationRes.getId());
+        Assertions.assertEquals(invitation.getTitle(), invitationRes.getTitle());
+        Assertions.assertEquals(invitation.getMessage(), invitationRes.getMessage());
+        Assertions.assertEquals(invitation.getStartDate(), invitationRes.getStartDate());
+
+    }
 }

@@ -3,7 +3,7 @@ package com.toy.weddingapp.common.constant.convert;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter(autoApply = true)
+@Converter
 public abstract class CodeEnumConverter<T extends CodeEnum> implements AttributeConverter<T, String> {
 
     private final Class<T> clazz;

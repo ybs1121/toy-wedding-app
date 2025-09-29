@@ -4,13 +4,21 @@ import com.toy.weddingapp.domain.invitation.dto.InvitationAddRequest;
 import com.toy.weddingapp.domain.invitation.dto.InvitationResponse;
 import com.toy.weddingapp.domain.invitation.dto.InvitationUpdateRequest;
 import com.toy.weddingapp.domain.invitation.service.InvitationService;
+import io.seruco.encoding.base62.Base62;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/invite")
 public class InvitationController {
 
     private final InvitationService invitationService;
@@ -37,4 +45,20 @@ public class InvitationController {
         request.setId(id);
         return invitationService.update(request);
     }
+
+    @PatchMapping("/{id}/uri")
+    public InvitationResponse createShortUri(@PathVariable Long id) {
+        return invitationService.createUrl(id);
+    }
+
+    @GetMapping("/{shortUri}")
+    public ResponseEntity<?> getInvitationByShortUri(@PathVariable String shortUri) {
+        String id = new String(Base62.createInstance().decode(shortUri.getBytes(StandardCharsets.UTF_8)));
+        String longUrl = invitationService.getOne(Long.parseLong(id)).getUrl();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(longUrl));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    }
+
+
 }

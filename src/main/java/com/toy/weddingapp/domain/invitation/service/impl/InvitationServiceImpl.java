@@ -9,11 +9,15 @@ import com.toy.weddingapp.domain.invitation.repository.InvitationRepository;
 import com.toy.weddingapp.domain.invitation.service.InvitationService;
 import com.toy.weddingapp.domain.weddings.entity.Weddings;
 import com.toy.weddingapp.domain.weddings.repository.WeddingRepository;
+import io.seruco.encoding.base62.Base62;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.ByteBuffer;
 
 @Service
 @Transactional
@@ -25,6 +29,9 @@ public class InvitationServiceImpl implements InvitationService {
     private final InvitationRepository invitationRepository;
     private final WeddingRepository weddingRepository;
     private final EntityManager em;
+
+    @Value("${weddings.domain}")
+    private String DOMAIN;
 
     @Override
     public Long save(InvitationAddRequest request) {
@@ -71,4 +78,24 @@ public class InvitationServiceImpl implements InvitationService {
 
         return request.getId();
     }
+
+    @Override
+    public InvitationResponse createUrl(Long id) {
+        String shortUri = new String(Base62.createInstance().encode(longToBytes(id)));
+
+        Invitation invitation = invitationRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Invitation with id " + id + " not found")
+        );
+        invitation.setShortUrl(String.format("%s/invitations/view/%s", DOMAIN, shortUri));
+        invitation.setUrl(String.format("%s/invitations/view/%s", DOMAIN, id));
+        return invitationMapper.toDto(invitation);
+    }
+
+
+    public static byte[] longToBytes(long x) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.putLong(x);
+        return buffer.array();
+    }
+
 }

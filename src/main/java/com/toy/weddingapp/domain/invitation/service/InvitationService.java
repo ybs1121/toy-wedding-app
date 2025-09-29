@@ -13,4 +13,8 @@ public interface InvitationService {
     Void delete(Long id);
 
     Long update(InvitationUpdateRequest request);
+
+    InvitationResponse createUrl(Long id);
+
+
 }

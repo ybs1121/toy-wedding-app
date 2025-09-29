@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
+
+    Invitation findByShortUrl(String shortUrl);
 }
