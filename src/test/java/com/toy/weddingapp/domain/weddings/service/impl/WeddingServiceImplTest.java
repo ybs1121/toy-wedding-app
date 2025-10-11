@@ -5,18 +5,14 @@ import static org.mockito.BDDMockito.*;
 import static org.assertj.core.api.Assertions.*;
 
 import com.toy.weddingapp.domain.users.entity.User;
-import com.toy.weddingapp.domain.users.repository.UserRepository;
+import com.toy.weddingapp.domain.users.repository.UserJpaRepository;
 import com.toy.weddingapp.domain.weddings.dto.WeddingAddRequest;
 import com.toy.weddingapp.domain.weddings.dto.WeddingModRequest;
-import com.toy.weddingapp.domain.weddings.dto.WeddingResponse;
 import com.toy.weddingapp.domain.weddings.entity.Weddings;
 import com.toy.weddingapp.domain.weddings.mapper.WeddingMapper;
 import com.toy.weddingapp.domain.weddings.repository.WeddingRepository;
-import com.toy.weddingapp.domain.weddings.service.WeddingService;
-import com.toy.weddingapp.domain.weddings.service.impl.WeddingServiceImpl;
 
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +30,7 @@ class WeddingServiceImplTest {
     private WeddingServiceImpl weddingService;
 
     @Mock
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
     @Mock
     private WeddingRepository weddingRepository;
     @Mock
@@ -68,7 +64,7 @@ class WeddingServiceImplTest {
         weddings.setGroomName("김길동");
         weddings.setBrideName("홍길동");
 
-        given(userRepository.findByUserId("tester")).willReturn(Optional.of(user));
+        given(userJpaRepository.findByUserId("tester")).willReturn(Optional.of(user));
         given(weddingMapper.toEntity(weddingAddRequest, user)).willReturn(weddings);
         given(weddingRepository.save(weddings)).willReturn(weddings);
 
@@ -77,7 +73,7 @@ class WeddingServiceImplTest {
         long save = weddingService.save(weddingAddRequest);
         //then
         assertThat(save).isEqualTo(1);
-        then(userRepository).should(times(1)).findByUserId("tester");
+        then(userJpaRepository).should(times(1)).findByUserId("tester");
         then(weddingRepository).should(times(1)).save(weddings);
     }
 
@@ -95,7 +91,7 @@ class WeddingServiceImplTest {
         weddingAddRequest.setBrideName("홍길동");
 
 
-        given(userRepository.findByUserId("tester")).willReturn(Optional.empty());
+        given(userJpaRepository.findByUserId("tester")).willReturn(Optional.empty());
 
         // when & then
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {

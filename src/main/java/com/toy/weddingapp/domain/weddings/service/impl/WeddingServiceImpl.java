@@ -1,7 +1,7 @@
 package com.toy.weddingapp.domain.weddings.service.impl;
 
 import com.toy.weddingapp.domain.users.entity.User;
-import com.toy.weddingapp.domain.users.repository.UserRepository;
+import com.toy.weddingapp.domain.users.repository.UserJpaRepository;
 import com.toy.weddingapp.domain.weddings.dto.WeddingAddRequest;
 import com.toy.weddingapp.domain.weddings.dto.WeddingModRequest;
 import com.toy.weddingapp.domain.weddings.dto.WeddingResponse;
@@ -20,13 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class WeddingServiceImpl implements WeddingService {
 
     private final WeddingRepository weddingRepository;
-    private final UserRepository userRepository;
+    private final UserJpaRepository userJpaRepository;
     private final WeddingMapper weddingMapper;
     private final EntityManager em;
 
     @Override
     public Long save(WeddingAddRequest weddingAddRequest) {
-        User user = userRepository.findByUserId(weddingAddRequest.getUserId())
+        User user = userJpaRepository.findByUserId(weddingAddRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
 //        User referenceUser = em.getReference(User.class, user.getId());

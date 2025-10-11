@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface GuestBookMapper {
+//    @Mapping(target = "message", source = "addRequest.message")
     GuestBook toEntity(GuestBookAddRequest addRequest, Invitation invitation);
 
 //    @Mapping(source = "invitationId", target = "invitationId")

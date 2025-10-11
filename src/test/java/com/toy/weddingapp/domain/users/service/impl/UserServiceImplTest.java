@@ -5,7 +5,7 @@ import com.toy.weddingapp.domain.users.dto.UserAddRequest;
 import com.toy.weddingapp.domain.users.dto.UserLoginRequest;
 import com.toy.weddingapp.domain.users.entity.User;
 import com.toy.weddingapp.domain.users.mapper.UserMapper;
-import com.toy.weddingapp.domain.users.repository.UserRepository;
+import com.toy.weddingapp.domain.users.repository.UserJpaRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
 
     @Mock
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
 
     @Mock
     private UserMapper userMapper;
@@ -51,14 +51,14 @@ class UserServiceImplTest {
         user.setName("김길동");
         user.setRole("USER");
         given(userMapper.toEntity(userAddRequest)).willReturn(user);
-        given(userRepository.save(user)).willReturn(user);
+        given(userJpaRepository.save(user)).willReturn(user);
 
         // when
         long userId = userService.save(userAddRequest);
 
         // then
         Assertions.assertThat(userId).isEqualTo(1);
-        then(userRepository).should().save(user);
+        then(userJpaRepository).should().save(user);
     }
 
     @DisplayName("로그인 시 JWT 반환")
@@ -77,7 +77,7 @@ class UserServiceImplTest {
         user.setName("김길동");
         user.setRole("USER");
 
-        given(userRepository.findByUserIdAndPassword(userLoginRequest.getUserId(), userLoginRequest.getPassword()))
+        given(userJpaRepository.findByUserIdAndPassword(userLoginRequest.getUserId(), userLoginRequest.getPassword()))
                 .willReturn(Optional.of(user));
         given(jwtProvider.generateToken("tester")).willReturn("mocked.jwt.token");
 
@@ -99,7 +99,7 @@ class UserServiceImplTest {
         UserLoginRequest userLoginRequest = new UserLoginRequest();
         userLoginRequest.setUserId("tester");
         userLoginRequest.setPassword("tester");
-        given(userRepository.findByUserIdAndPassword(userLoginRequest.getUserId(), userLoginRequest.getPassword()))
+        given(userJpaRepository.findByUserIdAndPassword(userLoginRequest.getUserId(), userLoginRequest.getPassword()))
                 .willReturn(Optional.empty());
 
         Assertions.assertThatThrownBy(() -> userService.login(userLoginRequest));

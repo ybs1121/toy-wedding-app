@@ -26,4 +26,5 @@ public class InvitationAddRequest {
 
     @NotNull
     private LocalDate endDate;
+
 }
