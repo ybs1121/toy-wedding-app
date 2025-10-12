@@ -7,7 +7,7 @@ import com.toy.weddingapp.domain.guestbook.entity.GuestBook;
 import com.toy.weddingapp.domain.guestbook.mapper.GuestBookMapper;
 import com.toy.weddingapp.domain.guestbook.repository.GuestBookJpaRepository;
 import com.toy.weddingapp.domain.invitation.entity.Invitation;
-import com.toy.weddingapp.domain.invitation.repository.InvitationRepository;
+import com.toy.weddingapp.domain.invitation.repository.InvitationJpaRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +32,7 @@ class GuestBookServiceImplTest {
     private GuestBookJpaRepository guestBookJpaRepository;
 
     @Mock
-    private InvitationRepository invitationRepository;
+    private InvitationJpaRepository invitationJpaRepository;
 
     @Mock
     private EntityManager em;
@@ -59,7 +59,7 @@ class GuestBookServiceImplTest {
         guestBook.setName("tester");
         guestBook.setInvitation(invitation);
 
-        given(invitationRepository.findById(1L)).willReturn(Optional.of(invitation));
+        given(invitationJpaRepository.findById(1L)).willReturn(Optional.of(invitation));
         given(guestBookMapper.toEntity(guestBookAddRequest, invitation)).willReturn(guestBook);
         given(guestBookJpaRepository.save(guestBook)).willReturn(guestBook);
 
@@ -91,7 +91,7 @@ class GuestBookServiceImplTest {
         guestBook.setName("tester");
         guestBook.setInvitation(invitation);
 
-        given(invitationRepository.findById(1L)).willReturn(Optional.empty());
+        given(invitationJpaRepository.findById(1L)).willReturn(Optional.empty());
 //        given(guestBookMapper.toEntity(guestBookAddRequest, invitation)).willReturn(guestBook);
 //        given(guestBookJpaRepository.save(guestBook)).willReturn(guestBook);
 

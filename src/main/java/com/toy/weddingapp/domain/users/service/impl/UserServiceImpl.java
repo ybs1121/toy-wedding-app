@@ -12,6 +12,7 @@ import com.toy.weddingapp.domain.users.repository.UserQueryDslRepository;
 import com.toy.weddingapp.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> searchUsers(UserFindRequest userFindRequest) {
-        return userQueryDslRepository.searchUsers(userFindRequest);
+    public List<UserResponse> searchUsers(UserFindRequest userFindRequest, PageRequest pageRequest) {
+        return userQueryDslRepository.searchUsers(userFindRequest, pageRequest);
     }
 }

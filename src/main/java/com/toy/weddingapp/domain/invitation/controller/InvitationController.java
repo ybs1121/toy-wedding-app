@@ -2,6 +2,7 @@ package com.toy.weddingapp.domain.invitation.controller;
 
 import com.toy.weddingapp.domain.invitation.dto.InvitationAddRequest;
 import com.toy.weddingapp.domain.invitation.dto.InvitationResponse;
+import com.toy.weddingapp.domain.invitation.dto.InvitationStatusStatisticsResponse;
 import com.toy.weddingapp.domain.invitation.dto.InvitationUpdateRequest;
 import com.toy.weddingapp.domain.invitation.service.InvitationService;
 import io.seruco.encoding.base62.Base62;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,8 +31,8 @@ public class InvitationController {
         return invitationService.save(request);
     }
 
-    @GetMapping
-    public InvitationResponse getInvitation(Long id) {
+    @GetMapping("/{id}")
+    public InvitationResponse getInvitation(@PathVariable Long id) {
         return invitationService.getOne(id);
     }
 
@@ -59,6 +61,19 @@ public class InvitationController {
         headers.setLocation(URI.create(longUrl));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
+
+
+    @GetMapping("/status")
+    public InvitationStatusStatisticsResponse getInvitationStatusStatistics() {
+        return invitationService.getInvitationStatusStatistics();
+    }
+
+    @GetMapping
+    public List<InvitationResponse> searchInvitations() {
+        return invitationService.searchInvitations();
+    }
+
+
 
 
 }

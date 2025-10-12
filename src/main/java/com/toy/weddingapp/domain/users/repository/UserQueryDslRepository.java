@@ -10,6 +10,7 @@ import com.toy.weddingapp.domain.users.dto.UserResponse;
 import com.toy.weddingapp.domain.users.entity.QUser;
 import com.toy.weddingapp.domain.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +54,7 @@ public class UserQueryDslRepository {
     }
 
 
-    public List<UserResponse> searchUsers(UserFindRequest userFindRequest) {
+    public List<UserResponse> searchUsers(UserFindRequest userFindRequest, PageRequest pageRequest) {
         QUser qUser = QUser.user;
         return query.select(
                         Projections.bean(
@@ -69,6 +70,8 @@ public class UserQueryDslRepository {
                         nameEquals(userFindRequest.getName()),
                         roleEquals(userFindRequest.getRole())
                 ).orderBy(qUser.createTime.desc(), qUser.updateTime.desc().nullsLast())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
                 .fetch();
 
     }

@@ -8,8 +8,7 @@ import com.toy.weddingapp.domain.guestbook.mapper.GuestBookMapper;
 import com.toy.weddingapp.domain.guestbook.repository.GuestBookJpaRepository;
 import com.toy.weddingapp.domain.guestbook.service.GuestBookService;
 import com.toy.weddingapp.domain.invitation.entity.Invitation;
-import com.toy.weddingapp.domain.invitation.mapper.InvitationMapper;
-import com.toy.weddingapp.domain.invitation.repository.InvitationRepository;
+import com.toy.weddingapp.domain.invitation.repository.InvitationJpaRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GuestBookServiceImpl implements GuestBookService {
 
     private final GuestBookJpaRepository guestBookJpaRepository;
-    private final InvitationRepository invitationRepository;
+    private final InvitationJpaRepository invitationJpaRepository;
     private final GuestBookMapper guestBookMapper;
     private final EntityManager em;
 
@@ -29,7 +28,7 @@ public class GuestBookServiceImpl implements GuestBookService {
     public Long save(GuestBookAddRequest addRequest) {
 
         // 검증
-        Invitation invitation = invitationRepository.findById(addRequest.getInvitationId())
+        Invitation invitation = invitationJpaRepository.findById(addRequest.getInvitationId())
                 .orElseThrow(() -> new RuntimeException("Invitation is not exist "));
 
         GuestBook saveGuestBook = guestBookJpaRepository.save(guestBookMapper.toEntity(addRequest, invitation));

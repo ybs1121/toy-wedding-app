@@ -6,7 +6,7 @@ import com.toy.weddingapp.domain.invitation.dto.InvitationResponse;
 import com.toy.weddingapp.domain.invitation.dto.InvitationUpdateRequest;
 import com.toy.weddingapp.domain.invitation.entity.Invitation;
 import com.toy.weddingapp.domain.invitation.mapper.InvitationMapper;
-import com.toy.weddingapp.domain.invitation.repository.InvitationRepository;
+import com.toy.weddingapp.domain.invitation.repository.InvitationJpaRepository;
 import com.toy.weddingapp.domain.weddings.entity.Weddings;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Value;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +29,7 @@ class InvitationServiceImplTest {
     private InvitationServiceImpl invitationServiceImpl;
 
     @Mock
-    private InvitationRepository invitationRepository;
+    private InvitationJpaRepository invitationJpaRepository;
 
     @Mock
     private InvitationMapper invitationMapper;
@@ -66,7 +65,7 @@ class InvitationServiceImplTest {
         invitation.setEndDate(LocalDate.of(2025, 9, 10));
 
         given(invitationMapper.toEntity(invitationAddRequest, weddings)).willReturn((invitation));
-        given(invitationRepository.save(invitation)).willReturn(invitation);
+        given(invitationJpaRepository.save(invitation)).willReturn(invitation);
         given(em.getReference(Weddings.class, 1L)).willReturn(weddings);
 
         //when
@@ -111,7 +110,7 @@ class InvitationServiceImplTest {
         updateInvitation.setStartDate(LocalDate.of(2025, 9, 10));
         updateInvitation.setEndDate(LocalDate.of(2025, 10, 10));
 
-        given(invitationRepository.findById(invitation.getId())).willReturn(Optional.of(invitation));
+        given(invitationJpaRepository.findById(invitation.getId())).willReturn(Optional.of(invitation));
         // when
         Long updateId = invitationServiceImpl.update(invitationUpdateRequest);
 
@@ -148,7 +147,7 @@ class InvitationServiceImplTest {
         invitationResponse.setEndDate(LocalDate.of(2025, 10, 10));
 
 
-        given(invitationRepository.findById(invitation.getId())).willReturn(Optional.of(invitation));
+        given(invitationJpaRepository.findById(invitation.getId())).willReturn(Optional.of(invitation));
         given(invitationMapper.toDto(invitation)).willReturn(invitationResponse);
 
         // when

@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -58,8 +59,10 @@ class UserServiceImplBootTest {
         UserFindRequest find = new UserFindRequest();
         find.setName("이수근");
 
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
         //W
-        List<UserResponse> userResponses = userService.searchUsers(find);
+        List<UserResponse> userResponses = userService.searchUsers(find, pageRequest);
 
         //t
         Assertions.assertThat(userResponses).isNotEmpty();

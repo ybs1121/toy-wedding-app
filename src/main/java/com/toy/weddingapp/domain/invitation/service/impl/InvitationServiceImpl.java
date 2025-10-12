@@ -2,10 +2,12 @@ package com.toy.weddingapp.domain.invitation.service.impl;
 
 import com.toy.weddingapp.domain.invitation.dto.InvitationAddRequest;
 import com.toy.weddingapp.domain.invitation.dto.InvitationResponse;
+import com.toy.weddingapp.domain.invitation.dto.InvitationStatusStatisticsResponse;
 import com.toy.weddingapp.domain.invitation.dto.InvitationUpdateRequest;
 import com.toy.weddingapp.domain.invitation.entity.Invitation;
 import com.toy.weddingapp.domain.invitation.mapper.InvitationMapper;
-import com.toy.weddingapp.domain.invitation.repository.InvitationRepository;
+import com.toy.weddingapp.domain.invitation.repository.InvitationJpaRepository;
+import com.toy.weddingapp.domain.invitation.repository.InvitationQuerydslRepository;
 import com.toy.weddingapp.domain.invitation.service.InvitationService;
 import com.toy.weddingapp.domain.weddings.entity.Weddings;
 import com.toy.weddingapp.domain.weddings.repository.WeddingRepository;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 @Service
 @Transactional
@@ -26,7 +29,8 @@ import java.nio.ByteBuffer;
 public class InvitationServiceImpl implements InvitationService {
 
     private final InvitationMapper invitationMapper;
-    private final InvitationRepository invitationRepository;
+    private final InvitationJpaRepository invitationJpaRepository;
+    private final InvitationQuerydslRepository invitationQuerydslRepository;
     private final WeddingRepository weddingRepository;
     private final EntityManager em;
 
@@ -36,13 +40,13 @@ public class InvitationServiceImpl implements InvitationService {
     @Override
     public Long save(InvitationAddRequest request) {
         Weddings weddingsRef = em.getReference(Weddings.class, request.getWeddingsId());
-        Invitation saveInvitation = invitationRepository.save(invitationMapper.toEntity(request, weddingsRef));
+        Invitation saveInvitation = invitationJpaRepository.save(invitationMapper.toEntity(request, weddingsRef));
         return saveInvitation.getId();
     }
 
     @Override
     public InvitationResponse getOne(Long id) {
-        Invitation invitation = invitationRepository.findById(id).orElseThrow(
+        Invitation invitation = invitationJpaRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Invitation with id " + id + " not found")
         );
 
@@ -54,16 +58,16 @@ public class InvitationServiceImpl implements InvitationService {
 
     @Override
     public Void delete(Long id) {
-        Invitation invitation = invitationRepository.findById(id).orElseThrow(
+        Invitation invitation = invitationJpaRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Invitation with id " + id + " not found")
         );
-        invitationRepository.delete(invitation);
+        invitationJpaRepository.delete(invitation);
         return null;
     }
 
     @Override
     public Long update(InvitationUpdateRequest request) {
-        Invitation invitation = invitationRepository.findById(request.getId()).orElseThrow(
+        Invitation invitation = invitationJpaRepository.findById(request.getId()).orElseThrow(
                 () -> new RuntimeException("Invitation with id " + request.getId() + " not found")
         );
 
@@ -83,12 +87,22 @@ public class InvitationServiceImpl implements InvitationService {
     public InvitationResponse createUrl(Long id) {
         String shortUri = new String(Base62.createInstance().encode(longToBytes(id)));
 
-        Invitation invitation = invitationRepository.findById(id).orElseThrow(
+        Invitation invitation = invitationJpaRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Invitation with id " + id + " not found")
         );
         invitation.setShortUrl(String.format("%s/invitations/view/%s", DOMAIN, shortUri));
         invitation.setUrl(String.format("%s/invitations/view/%s", DOMAIN, id));
         return invitationMapper.toDto(invitation);
+    }
+
+    @Override
+    public InvitationStatusStatisticsResponse getInvitationStatusStatistics() {
+        return invitationQuerydslRepository.getInvitationStatusStatistics();
+    }
+
+    @Override
+    public List<InvitationResponse> searchInvitations() {
+        return invitationQuerydslRepository.searchInvitations();
     }
 
 

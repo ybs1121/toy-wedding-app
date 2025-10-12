@@ -6,6 +6,7 @@ import com.toy.weddingapp.domain.users.dto.UserLoginRequest;
 import com.toy.weddingapp.domain.users.dto.UserResponse;
 import com.toy.weddingapp.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> searchUsers(UserFindRequest userFindRequest) {
-        return userService.searchUsers(userFindRequest);
+    public List<UserResponse> searchUsers(UserFindRequest userFindRequest, PageRequest pageRequest) {
+        return userService.searchUsers(userFindRequest, pageRequest);
     }
 }

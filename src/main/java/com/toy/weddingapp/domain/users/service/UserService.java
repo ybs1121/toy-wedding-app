@@ -4,6 +4,7 @@ import com.toy.weddingapp.domain.users.dto.UserAddRequest;
 import com.toy.weddingapp.domain.users.dto.UserFindRequest;
 import com.toy.weddingapp.domain.users.dto.UserLoginRequest;
 import com.toy.weddingapp.domain.users.dto.UserResponse;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -13,5 +14,5 @@ public interface UserService {
 
     String login(UserLoginRequest request);
 
-    List<UserResponse> searchUsers(UserFindRequest userFindRequest);
+    List<UserResponse> searchUsers(UserFindRequest userFindRequest, PageRequest pageRequest);
 }
