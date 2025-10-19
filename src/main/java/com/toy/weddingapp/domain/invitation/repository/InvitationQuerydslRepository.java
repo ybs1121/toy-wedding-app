@@ -3,6 +3,7 @@ package com.toy.weddingapp.domain.invitation.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.*;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.toy.weddingapp.common.constant.Status;
 import com.toy.weddingapp.domain.invitation.dto.InvitationResponse;
@@ -111,4 +112,13 @@ public class InvitationQuerydslRepository {
                 .orderBy(qInvitation.id.desc())
                 .fetch();
     }
+
+    public List<String> parseUrlAndShortUrl() {
+        return query.select(QInvitation.invitation.url.concat("_").concat(QInvitation.invitation.shortUrl))
+                .from(QInvitation.invitation)
+                .fetch();
+
+    }
+
+
 }

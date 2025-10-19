@@ -30,6 +30,9 @@ public class User {
     @Column(length = 10, nullable = false)
     private String role;
 
+    @Column(length = 100)
+    private Long age;
+
     @CreationTimestamp
     private LocalDateTime createTime;
 

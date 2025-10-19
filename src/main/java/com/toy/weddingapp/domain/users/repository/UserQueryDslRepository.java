@@ -3,6 +3,8 @@ package com.toy.weddingapp.domain.users.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.toy.weddingapp.common.QueryDslUtils;
 import com.toy.weddingapp.domain.users.dto.UserFindRequest;
@@ -10,7 +12,10 @@ import com.toy.weddingapp.domain.users.dto.UserResponse;
 import com.toy.weddingapp.domain.users.entity.QUser;
 import com.toy.weddingapp.domain.users.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,9 +108,35 @@ public class UserQueryDslRepository {
                         nameEquals(userFindRequest.getName()),
                         roleEquals(userFindRequest.getRole())
                 ).fetchOne();
+        JPAQuery<Long> cnt = query.select(
+                        qUser.userId.count()
+                )
+                .from(qUser)
+                .where(
+                        userIdEquals(userFindRequest.getUserId()),
+                        nameEquals(userFindRequest.getName()),
+                        roleEquals(userFindRequest.getRole())
+                );
+        Pageable pageable = Pageable.ofSize(10);
+        Page<UserResponse> page = PageableExecutionUtils.getPage(userList, pageable, cnt::fetchCount);
 
         return new UserResponse.Results(userList, (count != null) ? count : 0L);
 
+    }
+
+    public List<String> findUserIdsBiggerThenAvg() {
+        QUser qUser = QUser.user;
+        QUser userSub = new QUser("userSub");
+
+        return query.select(qUser.userId)
+                .from(qUser)
+                .where(
+                        qUser.age.gt(
+                                JPAExpressions.select(userSub.age.avg())
+                                        .from(userSub)
+                        )
+                )
+                .fetch();
     }
 
 
